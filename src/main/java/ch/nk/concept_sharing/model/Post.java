@@ -1,18 +1,30 @@
 package ch.nk.concept_sharing.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+import java.util.List;
+
+@Entity
 @Data
-
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Post {
-    private int id;
+    @Id @GeneratedValue
+    private Long id;
     private String title;
-    private String description;
-    private int userId;
+    private String content;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Category category;
+
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "post")
+    private List<Like> likes;
 }

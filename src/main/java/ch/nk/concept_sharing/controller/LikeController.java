@@ -1,36 +1,39 @@
 package ch.nk.concept_sharing.controller;
 
 import ch.nk.concept_sharing.model.Like;
+import ch.nk.concept_sharing.service.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-@CrossOrigin(origins = "http://localhost:3000")
+import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/likes")
 public class LikeController {
+
+    private final LikeService likeService;
+
     @Autowired
-    private List<Like> likes = new ArrayList<>();
+    public LikeController(LikeService likeService) {
+        this.likeService = likeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Like>> getLikes() {
+        return ResponseEntity.ok(likeService.getAllLikes());
+    }
 
     @PostMapping
-    public ResponseEntity<Like> addLike(@RequestBody Like like) {
-        likes.add(like);
-        return new ResponseEntity<>(like, HttpStatus.CREATED);
+    public ResponseEntity<Like> createLike(@RequestBody Like like) {
+        return ResponseEntity.status(201).body(likeService.createLike(like));
     }
 
-    @GetMapping("{/id}")
-    public ResponseEntity<Like> getLike(@PathVariable Long id) {
-        for (Like like : likes) {
-            if (like.getId() == id) {
-                return new ResponseEntity<>(like, HttpStatus.OK);
-            }
-            return new ResponseEntity<>(like, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<Like> getLikeById(@PathVariable Long id) {
+        return likeService.getLikeById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
-
-
 }

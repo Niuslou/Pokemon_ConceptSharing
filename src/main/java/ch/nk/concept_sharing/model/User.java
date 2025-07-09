@@ -1,17 +1,21 @@
 package ch.nk.concept_sharing.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+import java.util.List;
+
+@Entity
 @Data
-
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class User {
-    private int id;
+    @Id @GeneratedValue
+    private Long id;
     private String username;
     private String email;
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 }

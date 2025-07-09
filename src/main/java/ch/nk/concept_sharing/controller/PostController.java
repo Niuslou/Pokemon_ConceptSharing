@@ -1,37 +1,39 @@
 package ch.nk.concept_sharing.controller;
 
 import ch.nk.concept_sharing.model.Post;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import ch.nk.concept_sharing.service.PostService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-@CrossOrigin(origins = "http://localhost:3000")
+import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/posts")
 public class PostController {
-    private List<Post> posts = new ArrayList<>();
+
+    private final PostService postService;
+
+    @Autowired  // ← Spring injiziert hier automatisch die PostService-Instanz
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Post>> getPosts() {
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post post) {
-        posts.add(post);
-        return new ResponseEntity<>(post, HttpStatus.CREATED);
+        return ResponseEntity.status(201).body(postService.createPost(post));
     }
 
-    @GetMapping("{/id}")
-    public ResponseEntity<Post> getPostById(@PathVariable long id) {
-        Optional<Post> post = posts.stream().filter(p -> p.getId() == id).findFirst();
-        if (post.isPresent()) {
-            return new ResponseEntity<>(post.get(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<Post> getPostById(@PathVariable Long id) {
+        return postService.getPostById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
-
 }

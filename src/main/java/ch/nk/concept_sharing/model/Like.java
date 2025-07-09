@@ -1,17 +1,20 @@
 package ch.nk.concept_sharing.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+@Entity
 @Data
-
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Like {
-    private int id;
-    private int userId;
-    private int postId;
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Post post;
 }
